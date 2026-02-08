@@ -1,0 +1,55 @@
+/* src/Card.css */
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 16px;
+    overflow: hidden;
+    background-color: #fff;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  /* ... (나머지 스타일 코드는 이전 답변과 동일) ... */
+  
+
+  .card-content {
+    padding: 16px;
+  }
+  
+  .card-title {
+    font-size: 1.5em;
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  .card-description {
+    color:#9f9f9f;
+  }
+  .card-price{
+    font-weight: bold;
+  }
+
+  .card-button {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 4px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s;
+  }
+  
