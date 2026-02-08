@@ -1,11 +1,18 @@
-/* src/Card.css */
+.card_container{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2%;
+  padding: 20px;
+}
+
+
 
 .card {
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    margin: 16px;
+    width: 100%;
+    max-width: 300px;
     overflow: hidden;
     background-color: #fff;
     transition: transform 0.3s ease-in-out;
@@ -21,10 +28,6 @@
     height: 200px;
     object-fit: cover;
   }
-  
-  /* ... (나머지 스타일 코드는 이전 답변과 동일) ... */
-  
-
   .card-content {
     padding: 16px;
   }
