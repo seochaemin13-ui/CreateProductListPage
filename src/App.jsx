@@ -21,7 +21,7 @@ function App() {
 
       <header className="header-bar">
         <div className="header-content">
-          <img src="/img/cart_icon.png"
+          <img src="img/cart_icon.png"
           alt="장바구니"
           className='cart_icon'></img>
           {cartCount>0 && (
