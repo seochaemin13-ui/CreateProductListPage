@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Card from './Card';
 import './App.css';
 
 function App() {
-  const handleButtonClick = (title) => {
-    alert(`장바구니에 상품이 담겼습니다.`);
+  const [cartCount, setCartCount] =useState(0);
+
+  const handleButtonClick = (id) => {
+    console.log(`장바구니에 ${id}이 담겼습니다.`);
+    setCartCount(prevCount => prevCount +1);
   };
 
   const cardsData = [
@@ -15,17 +18,23 @@ function App() {
 
   return (
     <div className="App">{}
+
       <header className="header-bar">
         <div className="header-content">
           <img src="/img/cart_icon.png"
           alt="장바구니"
           className='cart_icon'></img>
+          {cartCount>0 && (
+            <span className='cart-badge'>{cartCount}</span>
+            )}
         </div>
-      </header>{}
+      </header>
+
       <div className="title-area">
         <h1>신발 상품 목록</h1>
         <p>현재 {cardsData.length}개의 상품이 있습니다.</p>
       </div>{}
+
       <div className="card_container">
         {cardsData.map((card) => (
           <Card
@@ -35,10 +44,11 @@ function App() {
             price={card.price}
             imageUrl={card.imageUrl}
             buttonText={card.buttonText}
-            onButtonClick={() => handleButtonClick(card.title)}
+            onButtonClick={() => handleButtonClick(card.id)}
           />
         ))}
       </div>
+      
     </div>
   );
 }
