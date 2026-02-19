@@ -36,7 +36,7 @@ const AddCardForm = ({ onSubmit, onBack }) => {
       const nums = value.replace(/\D/g, '').slice(0, 4);
       formattedValue = nums.length >= 2 ? `${nums.slice(0, 2)} / ${nums.slice(2)}` : nums;
     } else if (name === 'ownerName') {
-      formattedValue = value.slice(0, 20).toUpperCase();
+      formattedValue = value.slice(0, 30).toUpperCase();
     } else if (name === 'cvc' || name === 'password') {
        formattedValue = value.replace(/\D/g, '');
     }
@@ -204,8 +204,19 @@ const AddCardForm = ({ onSubmit, onBack }) => {
         <input className="short-input" name="expiryDate" value={cardInfo.expiryDate} onChange={handleChange} placeholder="MM / YY" />
       </div>
       <div className="input-group">
-        <label>카드 소유자 이름</label>
-        <input name="ownerName" value={cardInfo.ownerName} onChange={handleChange} placeholder="카드에 표시된 이름과 동일하게 입력하세요." />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+          <label style={{ marginBottom: 0 }}>카드 소유자 이름</label>
+          <span style={{ fontSize: '15px', color: '#000000' }}>
+            {cardInfo.ownerName.length}/30
+          </span>
+        </div>
+        <input 
+          name="ownerName" 
+          value={cardInfo.ownerName} 
+          onChange={handleChange} 
+          maxLength={30}
+          placeholder="카드에 표시된 이름과 동일하게 입력하세요." 
+        />
       </div>
 
       <div className="input-group">
