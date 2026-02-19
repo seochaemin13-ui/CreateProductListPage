@@ -67,7 +67,7 @@ const MyCardList = ({ cards, onAddCard, onBack }) => {
                 background: '#333', 
                 color: 'white', 
                 borderRadius: '12px',
-                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.37)',
+                boxShadow: '10px 10px 20px -8px rgba(0, 0, 0, 0.37)',
                 position: 'relative',
               }}>
                 <div style={{ 
