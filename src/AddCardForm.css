@@ -12,13 +12,14 @@
   background: #333;
   border-radius: 12px;
   color: white;
-  padding: 24px;
+  padding: 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   box-shadow: 10px 10px 20px -8px rgba(0,0,0,0.37);
   margin: 0 auto 30px auto;
-  position: relative;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .card-chip {
@@ -26,33 +27,33 @@
   height: 35px;
   background: #cbba64;
   border-radius: 4px;
-  position: absolute;
-  top: 35%;
-  left: 13%;
-  transform: translateX(-50%);
 }
 
 .card-number-display {
   font-size: 20px;
   letter-spacing: 6px;
   text-align: center;
-  position: absolute;
-  top: 68%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   width: 100%;
 }
 
 .card-details {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  width: 100%;
-  padding: 0 25px;
-  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
   font-size: 18px;
+  width: 100%;
+}
+
+.card-details-name {
+  max-width: 70%;
+  word-break: break-all;
+  line-height: 1.3;
+}
+
+.card-details-date {
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: 10px;
 }
 
 .input-group { margin-bottom: 18px; }

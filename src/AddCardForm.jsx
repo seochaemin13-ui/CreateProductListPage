@@ -135,8 +135,8 @@ const AddCardForm = ({ onSubmit, onBack }) => {
           {[c1, c2, c3.replace(/./g, '•'), c4.replace(/./g, '•')].filter(Boolean).join(' ')}
         </div>
         <div className="card-details">
-          <span>{cardInfo.ownerName || 'NAME'}</span>
-          <span>{cardInfo.expiryDate || 'MM / YY'}</span>
+          <span className="card-details-name">{cardInfo.ownerName || 'NAME'}</span>
+          <span className="card-details-date">{cardInfo.expiryDate || 'MM / YY'}</span>
         </div>
       </div>
 
