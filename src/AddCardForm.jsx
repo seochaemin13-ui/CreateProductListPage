@@ -1,32 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import VirtualCard from './VirtualCard';
 import './AddCardForm.css';
 
 const AddCardForm = ({ onSubmit, onBack }) => {
   const [cardInfo, setCardInfo] = useState({
-    cardNumber: '', expiryDate: '', ownerName: '', cvc: '', password: ''
+    cardNumber: ['', '', '', ''], 
+    expiryDate: '', 
+    ownerName: '', 
+    cvc: '', 
+    password: ['', '']
   });
 
-  const inputRef1 = useRef(null);
-  const inputRef2 = useRef(null);
-  const inputRef3 = useRef(null);
-  const inputRef4 = useRef(null);
-
-  const c1 = cardInfo.cardNumber.slice(0, 4);
-  const c2 = cardInfo.cardNumber.slice(4, 8);
-  const c3 = cardInfo.cardNumber.slice(8, 12);
-  const c4 = cardInfo.cardNumber.slice(12, 16);
-
-  const pwdRef1 = useRef(null);
-  const pwdRef2 = useRef(null);
-
-  const p1 = cardInfo.password[0] || '';
-  const p2 = cardInfo.password[1] || '';
-
-  useEffect(() => {
-    if (c1.length === 4 && c2.length === 0) inputRef2.current?.focus();
-    else if (c2.length === 4 && c3.length === 0) inputRef3.current?.focus();
-    else if (c3.length === 4 && c4.length === 0) inputRef4.current?.focus();
-  }, [c1.length, c2.length, c3.length, c4.length]);
+  const inputRefs = useRef([]);
+  const pwdRefs = useRef([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,67 +23,87 @@ const AddCardForm = ({ onSubmit, onBack }) => {
       formattedValue = nums.length >= 2 ? `${nums.slice(0, 2)} / ${nums.slice(2)}` : nums;
     } else if (name === 'ownerName') {
       formattedValue = value.slice(0, 30).toUpperCase();
-    } else if (name === 'cvc' || name === 'password') {
+    } else if (name === 'cvc') {
        formattedValue = value.replace(/\D/g, '');
     }
     setCardInfo({ ...cardInfo, [name]: formattedValue });
   };
 
-  const handleCardNumberChange = (e, chunkIndex) => {
+  const handleCardNumberChange = (e, index) => {
     const val = e.target.value.replace(/\D/g, '');
-    const chunks = [c1, c2, c3, c4];
-    chunks[chunkIndex] = val;
-    setCardInfo({ ...cardInfo, cardNumber: chunks.join('') });
-  };
+    if (val.length > 4) return;
+    
+    const newChunks = [...cardInfo.cardNumber];
+    newChunks[index] = val;
+    setCardInfo({ ...cardInfo, cardNumber: newChunks });
 
-  const handleKeyDown = (e, chunkIndex) => {
-    if (e.key === 'Backspace' && e.target.value === '') {
-      if (chunkIndex === 1) inputRef1.current?.focus();
-      if (chunkIndex === 2) inputRef2.current?.focus();
-      if (chunkIndex === 3) inputRef3.current?.focus();
+    if (val.length === 4 && index < 3) {
+      setTimeout(() => {
+        inputRefs.current[index + 1]?.focus();
+      }, 0);
     }
   };
-
-  const handleContainerClick = () => {
-    if (c1.length < 4) inputRef1.current?.focus();
-    else if (c2.length < 4) inputRef2.current?.focus();
-    else if (c3.length < 4) inputRef3.current?.focus();
-    else inputRef4.current?.focus();
-  };
-
-  const handleSubmit = () => {
-    onSubmit(cardInfo);
-  };
-
-  const showC2 = c1.length === 4 || c2.length > 0;
-  const showC3 = c2.length === 4 || c3.length > 0;
-  const showC4 = c3.length === 4 || c4.length > 0;
-
-  const isFormValid = 
-    cardInfo.cardNumber.length === 16 &&
-    cardInfo.expiryDate.length === 7 && 
-    cardInfo.ownerName.trim().length > 0 &&
-    cardInfo.cvc.length === 3 &&
-    cardInfo.password.length === 2;
 
   const handlePasswordChange = (e, index) => {
     const val = e.target.value.replace(/\D/g, ''); 
-    const chars = [p1, p2];
-    chars[index] = val;
-    setCardInfo({ ...cardInfo, password: chars.join('') });
+    if (val.length > 1) return;
 
-    if (val !== '' && index === 0) pwdRef2.current?.focus();
-  };
+    const newPwd = [...cardInfo.password];
+    newPwd[index] = val;
+    setCardInfo({ ...cardInfo, password: newPwd });
 
-  const handlePasswordKeyDown = (e, index) => {
-    if (e.key === 'Backspace' && e.target.value === '') {
-      if (index === 1) pwdRef1.current?.focus();
+    if (val !== '' && index === 0) {
+      pwdRefs.current[1]?.focus();
     }
   };
 
+  const handleKeyDown = (e, index, refs) => {
+    if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+      refs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleFocusToEnd = (e) => {
+    e.stopPropagation(); 
+    
+    const len = e.target.value.length;
+    setTimeout(() => {
+      e.target.setSelectionRange(len, len);
+    }, 0);
+  };
+
+  const handleContainerClick = (e) => {
+    if (e.target !== e.currentTarget) return;
+
+    const firstEmptyIndex = cardInfo.cardNumber.findIndex(chunk => chunk.length < 4);
+    const focusIndex = firstEmptyIndex === -1 ? 3 : firstEmptyIndex;
+    inputRefs.current[focusIndex]?.focus();
+  };
+
+  const handleSubmit = () => {
+    onSubmit({
+      ...cardInfo,
+      cardNumber: cardInfo.cardNumber.join(''),
+      password: cardInfo.password.join('')
+    });
+  };
+
+  const formDisplayNumber = [
+    cardInfo.cardNumber[0], 
+    cardInfo.cardNumber[1], 
+    cardInfo.cardNumber[2].replace(/./g, '•'), 
+    cardInfo.cardNumber[3].replace(/./g, '•')
+  ].filter(c => c.length > 0).join(' ');
+
+  const isFormValid = 
+    cardInfo.cardNumber.join('').length === 16 &&
+    cardInfo.expiryDate.length === 7 && 
+    cardInfo.ownerName.trim().length > 0 &&
+    cardInfo.cvc.length === 3 &&
+    cardInfo.password.join('').length === 2;
+
   return (
     <div className="page-wrapper">
-      
       <header className="clean-header">
         <button className="clean-header-btn" style={{ fontSize: '18px' }} onClick={onBack}>
           &lt; 카드 추가
@@ -108,81 +114,44 @@ const AddCardForm = ({ onSubmit, onBack }) => {
       </header>
 
       <div className="form-container">
-        
-        <div className="virtual-card">
-          <div className="card-chip"></div>
-          <div className="card-number-display">
-            {[c1, c2, c3.replace(/./g, '•'), c4.replace(/./g, '•')].filter(Boolean).join(' ')}
-          </div>
-          <div className="card-details">
-            <span className="card-details-name">{cardInfo.ownerName || 'NAME'}</span>
-            <span className="card-details-date">{cardInfo.expiryDate || 'MM / YY'}</span>
-          </div>
-        </div>
+        <VirtualCard 
+          displayNumber={formDisplayNumber}
+          ownerName={cardInfo.ownerName || 'NAME'}
+          expiryDate={cardInfo.expiryDate || 'MM / YY'}
+        />
 
         <div className="input-group">
           <label>카드 번호</label>
           <div className="card-input-container" onClick={handleContainerClick}>
-            <input 
-              ref={inputRef1}
-              type="text"
-              maxLength={4} 
-              value={c1}
-              onChange={(e) => handleCardNumberChange(e, 0)}
-              onKeyDown={(e) => handleKeyDown(e, 0)}
-              className="card-input-chunk" 
-            />
-            
-            {showC2 && (
-              <>
-                <span>-</span>
-                <input 
-                  ref={inputRef2}
-                  type="text"
-                  maxLength={4} 
-                  value={c2}
-                  onChange={(e) => handleCardNumberChange(e, 1)}
-                  onKeyDown={(e) => handleKeyDown(e, 1)}
-                  className="card-input-chunk" 
-                />
-              </>
-            )}
+            {cardInfo.cardNumber.map((chunk, index) => {
+              const isVisible = index === 0 || cardInfo.cardNumber[index - 1].length === 4 || chunk.length > 0;
+              if (!isVisible) return null;
 
-            {showC3 && (
-              <>
-                <span>-</span>
-                <input 
-                  ref={inputRef3}
-                  type="password"
-                  maxLength={4} 
-                  value={c3}
-                  onChange={(e) => handleCardNumberChange(e, 2)}
-                  onKeyDown={(e) => handleKeyDown(e, 2)}
-                  className="card-input-chunk" 
-                />
-              </>
-            )}
-
-            {showC4 && (
-              <>
-                <span>-</span>
-                <input 
-                  ref={inputRef4}
-                  type="password"
-                  maxLength={4} 
-                  value={c4}
-                  onChange={(e) => handleCardNumberChange(e, 3)}
-                  onKeyDown={(e) => handleKeyDown(e, 3)}
-                  className="card-input-chunk" 
-                />
-              </>
-            )}
+              return (
+                <React.Fragment key={`chunk-${index}`}>
+                  {index > 0 && <span>-</span>}
+                  <input
+                    ref={el => inputRefs.current[index] = el}
+                    type={index >= 2 ? "password" : "text"}
+                    maxLength={4}
+                    value={chunk}
+                    onChange={(e) => handleCardNumberChange(e, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index, inputRefs)}
+                    onFocus={handleFocusToEnd}
+                    onClick={handleFocusToEnd}
+                    className="card-input-chunk"
+                  />
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
+        
         <div className="input-group">
           <label>만료일</label>
           <input className="short-input" name="expiryDate" value={cardInfo.expiryDate} onChange={handleChange} placeholder="MM / YY" />
         </div>
+
         <div className="input-group">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
             <label style={{ marginBottom: 0 }}>카드 소유자 이름</label>
@@ -190,50 +159,35 @@ const AddCardForm = ({ onSubmit, onBack }) => {
               {cardInfo.ownerName.length}/30
             </span>
           </div>
-          <input 
-            name="ownerName" 
-            value={cardInfo.ownerName} 
-            onChange={handleChange} 
-            maxLength={30}
-            placeholder="카드에 표시된 이름과 동일하게 입력하세요." 
-          />
+          <input name="ownerName" value={cardInfo.ownerName} onChange={handleChange} maxLength={30} placeholder="카드에 표시된 이름과 동일하게 입력하세요." />
         </div>
 
         <div className="input-group">
             <label>보안 코드(CVC/CVV)</label>
             <input className="shortest-input" type="password" name="cvc" value={cardInfo.cvc} onChange={handleChange} maxLength={3} placeholder="" />
         </div>
+
         <div className="input-group">
             <label>카드 비밀번호</label>
             <div className="password-input-container">
-            <input 
-              ref={pwdRef1}
-              type="password"
-              maxLength={1} 
-              value={p1}
-              onChange={(e) => handlePasswordChange(e, 0)}
-              onKeyDown={(e) => handlePasswordKeyDown(e, 0)}
-              className="password-box" 
-            />
-            <input 
-              ref={pwdRef2}
-              type="password"
-              maxLength={1} 
-              value={p2}
-              onChange={(e) => handlePasswordChange(e, 1)}
-              onKeyDown={(e) => handlePasswordKeyDown(e, 1)}
-              className="password-box" 
-            />
-            <span className="password-dot">•</span>
-            <span className="password-dot">•</span>
+              {cardInfo.password.map((pwd, index) => (
+                <input
+                  key={`pwd-${index}`}
+                  ref={el => pwdRefs.current[index] = el}
+                  type="password"
+                  maxLength={1}
+                  value={pwd}
+                  onChange={(e) => handlePasswordChange(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index, pwdRefs)}
+                  className="password-box"
+                />
+              ))}
+              <span className="password-dot">•</span>
+              <span className="password-dot">•</span>
           </div>
         </div>
 
-        <button 
-          className="submit-btn" 
-          onClick={handleSubmit} 
-          disabled={!isFormValid}
-        >
+        <button className="submit-btn" onClick={handleSubmit} disabled={!isFormValid}>
           작성 완료
         </button>
       </div>
