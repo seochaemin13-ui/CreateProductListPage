@@ -17,12 +17,6 @@
   width: 100%;
   overflow: hidden;
 }
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
-}
   
 .card-image {
   width: 100%;
@@ -58,6 +52,18 @@
   margin-bottom: 10px;
 }
 
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.card-button.payment {
+  background-color: #ffe600;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+}
+
 .card-button {
   background-color: #000000;
   color: white;
@@ -66,12 +72,13 @@
   border-radius: 2em;
   cursor: pointer;
   font-size: clamp(8px, 6cqw, 16px);
+  font-weight: bold;
   width: auto;
   min-width: 4em;
   align-self: flex-start;
   text-align: center;
   white-space: nowrap;
-  margin-top: auto;
+  margin-top: 0; 
 }
 
 .card-button.added{
