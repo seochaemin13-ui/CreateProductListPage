@@ -1,155 +1,45 @@
 import React from 'react';
+import VirtualCard from './VirtualCard';
+import './MyCardList.css'; 
 
 const MyCardList = ({ cards, onAddCard, onBack }) => {
+
+  const renderAddCardButton = () => (
+    <button className="add-card-btn-large" onClick={onAddCard}>+</button>
+  );
+
   return (
-    <div style={{ 
-      background: 'white',
-      minHeight: '100vh',
-      boxSizing: 'border-box'
-    }}>
-      
-      <div style={{ 
-        width: '100%',
-        height: '60px',
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '40px',
-        boxSizing: 'border-box',
-      }}>
-        <h2 style={{ fontSize: '18px', margin: 0, fontWeight: 'normal' }}>보유카드</h2>
-        <button 
-          onClick={onBack} 
-          style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', padding: '0' }}
-        >
-          ✕
-        </button>
+    <div className="card-list-wrapper">
+      <div className="card-list-header">
+        <h2>보유카드</h2>
+        <button className="close-btn" onClick={onBack}>✕</button>
       </div>
 
-      <div style={{ 
-        padding: '20px', 
-        maxWidth: '400px', 
-        margin: '0 auto',
-        boxSizing: 'border-box'
-      }}>
+      <div className="card-list-content">
         {cards.length === 0 ? (
-          <div style={{ textAlign: 'center', marginTop: '60px' }}>
-            <p style={{ marginBottom: '15px', fontSize: '16px', color: '#333', fontWeight: 'bold' }}>
-              새로운 카드를 등록해주세요.
-            </p>
-            <button 
-              onClick={onAddCard}
-              style={{ 
-                width: '90%', 
-                height: '200px', 
-                background: '#e5e5e5', 
-                border: 'none', 
-                borderRadius: '12px', 
-                cursor: 'pointer',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontSize: '40px',
-                color: '#666',
-                margin: '0 auto'
-              }}
-            >
-              +
-            </button>
+          <div className="empty-state">
+            <p>새로운 카드를 등록해주세요.</p>
+            {renderAddCardButton()}
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-            {cards.map((card) => (
-              <div key={card.id}>
-                <div style={{ 
-                  width: '90%',
-                  height: '200px',
-                  margin: '0 auto 25px auto',
-                  background: '#333', 
-                  color: 'white', 
-                  borderRadius: '12px',
-                  boxShadow: '10px 10px 20px -8px rgba(0, 0, 0, 0.37)',
-                  position: 'relative',
-                }}>
-                  <div style={{ 
-                    width: '50px',
-                    height: '35px',
-                    background: '#cbba64',
-                    borderRadius: '4px',
-                    position: 'absolute',
-                    top: '35%',
-                    left: '13%',
-                    transform: 'translateX(-50%)'
-                  }}></div>
-                  
-                  <div style={{ 
-                    fontSize: '20px',
-                    letterSpacing: '3px',
-                    fontFamily: 'monospace',
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    position: 'absolute',
-                    top: '68%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '100%'
-                    }}>
-                    {card.cardNumber ? `${card.cardNumber.slice(0, 4)} ${card.cardNumber.slice(5, 9)} •••• ••••` : '0000 0000 •••• ••••'}
-                  </div>
+          <div className="card-list">
+            {cards.map((card) => {
+              const listDisplayNumber = card.cardNumber 
+                ? `${card.cardNumber.slice(0, 4)} ${card.cardNumber.slice(4, 8)} •••• ••••` 
+                : '0000 0000 •••• ••••';
 
-                  <div style={{
-                    position: 'absolute', 
-                    bottom: '20px', 
-                    left: '0',
-                    width: '100%', 
-                    padding: '0 25px', 
-                    boxSizing: 'border-box',
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    fontSize: '18px'
-                    }}>
-                    <span>{card.ownerName || 'NAME'}</span>
-                    <span>{card.expiryDate || 'MM/YY'}</span>
-                  </div>
+              return (
+                <div key={card.id} className="card-item">
+                  <VirtualCard 
+                    displayNumber={listDisplayNumber}
+                    ownerName={card.ownerName || 'NAME'}
+                    expiryDate={card.expiryDate || 'MM/YY'}
+                  />
+                  <button className="pay-btn">이 카드로 결제하기</button>
                 </div>
-
-                <button style={{ 
-                  display: 'block',
-                  width: '90%',
-                  margin: '0 auto',
-                  padding: '10px',
-                  background: '#fcf576',
-                  color: 'black',
-                  border: 'none',
-                  borderRadius: '30px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  fontSize: '16px'
-                }}>
-                  이 카드로 결제하기
-                </button>
-              </div>
-            ))}
-            
-            <button 
-              onClick={onAddCard}
-              style={{ 
-                width: '90%',
-                height: '200px', 
-                background: '#e5e5e5', 
-                border: 'none', 
-                borderRadius: '12px', 
-                cursor: 'pointer',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontSize: '40px',
-                color: '#666',
-                margin: '30px auto 15px auto'
-              }}
-            >
-              +
-            </button>
+              );
+            })}
+            {renderAddCardButton()}
           </div>
         )}
       </div>
