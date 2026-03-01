@@ -7,15 +7,18 @@ import './App.css';
 function App() {
 
   const [page, setPage] = useState('list');
-
   const [cards, setCards] = useState([]);
-
   const [cartCount, setCartCount] =useState(0);
 
-  const handleButtonClick = (id) => {
-    console.log(`장바구니에 ${id}이 담겼습니다.`);
-    setCartCount(prevCount => prevCount +1);
-  };
+  const handleButtonClick = (id, isAdding) => {
+      if (isAdding) {
+        console.log(`장바구니에 ${id}이 담겼습니다.`);
+        setCartCount(prevCount => prevCount + 1);
+      } else {
+        console.log(`장바구니에서 ${id}이 취소되었습니다.`);
+        setCartCount(prevCount => Math.max(0, prevCount - 1));
+      }
+    };
 
   const handlePaymentClick = () => {
     setPage('payment');
@@ -63,7 +66,7 @@ function App() {
               price={card.price}
               imageUrl={card.imageUrl}
               buttonText={card.buttonText}
-              onButtonClick={() => handleButtonClick(card.id)}
+              onButtonClick={(isAdding) => handleButtonClick(card.id, isAdding)}
               onPaymentClick={handlePaymentClick}
             />
           ))}
@@ -71,20 +74,19 @@ function App() {
       </>
      )}
 
-     {/* 2. 보유 카드 목록 페이지 */}
       {page === 'payment' && (
         <MyCardList 
           cards={cards} 
           onAddCard={() => setPage('addCard')}
-          onBack={() => setPage('list')}       // 뒤로가기 누르면 상품 목록으로
+          onBack={() => setPage('list')}
         />
       )}
 
       {/* 3. 카드 추가 폼 페이지 */}
       {page === 'addCard' && (
         <AddCardForm 
-          onSubmit={handleAddCardSubmit}       // 폼 제출 시 실행
-          onBack={() => setPage('payment')}    // 뒤로가기
+          onSubmit={handleAddCardSubmit}
+          onBack={() => setPage('payment')}
         />
       )}
       
