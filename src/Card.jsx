@@ -6,11 +6,11 @@ const Card = ({ title, price, description, imageUrl, buttonText, onButtonClick, 
   const[isAdded, setIsAdded]=useState(false);
 
   const handleButtonClick=()=>{
-    if(!isAdded) {
-      setIsAdded(true);
-      if (onButtonClick){
-        onButtonClick();
-      }
+    const newAddedState = !isAdded;
+    setIsAdded(newAddedState);
+    
+    if (onButtonClick) {
+      onButtonClick(newAddedState);
     }
   }
  
