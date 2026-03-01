@@ -1,8 +1,21 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import VirtualCard from './VirtualCard';
 import './AddCardForm.css';
 
 const AddCardForm = ({ onSubmit, onBack }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const helpRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showTooltip && helpRef.current && !helpRef.current.contains(event.target)) {
+        setShowTooltip(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showTooltip]);
+
   const [cardInfo, setCardInfo] = useState({
     cardNumber: ['', '', '', ''], 
     expiryDate: '', 
@@ -163,8 +176,34 @@ const AddCardForm = ({ onSubmit, onBack }) => {
         </div>
 
         <div className="input-group">
+          <div className="label-with-help">
             <label>보안 코드(CVC/CVV)</label>
-            <input className="shortest-input" type="password" name="cvc" value={cardInfo.cvc} onChange={handleChange} maxLength={3} placeholder="" />
+            
+            <div className="help-container" ref={helpRef}>
+              <button 
+                type="button"
+                className="help-button" 
+                onClick={() => setShowTooltip(!showTooltip)}
+              >
+                ?
+              </button>
+              
+              {showTooltip && (
+                <div className="tooltip-bubble">
+                  카드 뒷면의 마지막 3자리 숫자를 입력해주세요.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <input 
+            className="shortest-input" 
+            type="password" 
+            name="cvc" 
+            value={cardInfo.cvc} 
+            onChange={handleChange} 
+            maxLength={3} 
+          />
         </div>
 
         <div className="input-group">

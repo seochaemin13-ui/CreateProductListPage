@@ -187,3 +187,64 @@
   color: #888;
   cursor: default;
 }
+
+.label-with-help {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  margin-bottom: 5px;
+}
+
+.label-with-help label {
+  margin-bottom: 0;
+}
+
+.help-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.help-button {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #999;
+  background-color: white;
+  color: #999;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.tooltip-bubble {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  width: 160px;
+  text-align: center;
+  z-index: 100;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.tooltip-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent #444 transparent;
+}
