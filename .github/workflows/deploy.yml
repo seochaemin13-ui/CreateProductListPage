@@ -27,15 +27,16 @@ jobs:
         run: npm run build
 
       - name: Git 설정
-        # 배포할 때만 필요한 설정이지만, 가독성을 위해 배포 직전에 둡니다.
         if: github.event_name == 'push'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: 프로젝트 배포
-        # ★ 핵심: 오직 main 브랜치에 push(머지 포함)될 때만 실행됩니다.
+      - name: 배포 주소 인증 설정
         if: github.event_name == 'push'
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_DEPLOY_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.MY_DEPLOY_TOKEN }}@github.com/${{ github.repository }}.git
+
+      - name: 프로젝트 배포
+        if: github.event_name == 'push'
         run: npm run deploy
