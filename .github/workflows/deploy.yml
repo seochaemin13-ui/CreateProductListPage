@@ -1,0 +1,33 @@
+name: CI/CD Pipeline
+
+# main 브랜치에 push되거나 PR(pull request)이 올 때만 실행
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 노드 설치 (Node.js 20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 의존성 설치
+        run: npm install
+
+      - name: 프로젝트 빌드
+        run: npm run build
+
+      - name: 프로젝트 배포
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_DEPLOY_TOKEN }}
+        run: npm run deploy
