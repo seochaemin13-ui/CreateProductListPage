@@ -1,33 +1,42 @@
-import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Card from './Card';
+import '@testing-library/jest-dom';
+import Card from '../../src/Card';
 
-// 단위 1: 초기 렌더링 확인
-test('상품 정보(제목, 가격)가 정상적으로 렌더링되어야 한다.', () => {
-  render(
-    <Card 
-      title="테스트 신발" 
-      price="10,000원" 
-      description="설명" 
-      buttonText="담기" 
-    />
-  );
+describe('Card 컴포넌트 상세 테스트', () => {
+  const mockProps = {
+    title: "테스트 신발",
+    price: "10,000원",
+    description: "편안한 신발입니다.",
+    buttonText: "담기",
+    onButtonClick: jest.fn(),
+    onPaymentClick: jest.fn()
+  };
 
-  // Jest Matcher를 사용하여 텍스트가 있는지 확인 [cite: 147]
-  expect(screen.getByText('테스트 신발')).toBeInTheDocument();
-  expect(screen.getByText('10,000원')).toBeInTheDocument();
-});
+  test('상품의 제목, 가격, 설명이 화면에 올바르게 렌더링된다.', () => {
+    render(<Card {...mockProps} />);
+    
+    expect(screen.getByText(mockProps.title)).toBeInTheDocument();
+    expect(screen.getByText(mockProps.price)).toBeInTheDocument();
+    expect(screen.getByText(mockProps.description)).toBeInTheDocument();
+  });
 
-// 단위 2: 사용자 인터렉션(버튼 클릭) 확인
-test('버튼 클릭 시 "담김!"으로 텍스트가 변경되어야 한다.', () => {
-  render(<Card title="신발" buttonText="담기" />);
-  
-  const button = screen.getByRole('button');
-  
-  // 버튼 클릭 이벤트 발생
-  fireEvent.click(button);
-  
-  // 상태 변화 확인 (사용자 수정 사항 반영: 담김!으로 유지)
-  expect(button).toHaveTextContent('담김!');
-  expect(button).toHaveClass('added');
+  test('"담기" 버튼 클릭 시 텍스트가 "담김!"으로 변하고 "added" 클래스가 적용된다.', () => {
+    render(<Card {...mockProps} />);
+    const addBtn = screen.getByText('담기');
+    
+    fireEvent.click(addBtn);
+    
+    expect(addBtn).toHaveTextContent('담김!');
+    expect(addBtn).toHaveClass('added');
+    expect(mockProps.onButtonClick).toHaveBeenCalledWith(true);
+  });
+
+  test('"구매" 버튼 클릭 시 결제 페이지 이동 함수(onPaymentClick)가 호출된다.', () => {
+    render(<Card {...mockProps} />);
+    const payBtn = screen.getByText('구매');
+    
+    fireEvent.click(payBtn);
+
+    expect(mockProps.onPaymentClick).toHaveBeenCalled();
+  });
 });

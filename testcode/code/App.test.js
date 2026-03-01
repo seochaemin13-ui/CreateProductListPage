@@ -1,24 +1,30 @@
-import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
-import App from './App';
+import '@testing-library/jest-dom';
+import App from '../../src/App';
 
-test('메인 페이지 로드 시 상품 목록 개수가 정확히 표시되어야 한다.', () => {
-  render(<App />);
-  
-  // 초기 로드 시 3개의 상품이 있다고 표시되는지 확인
-  const titleDescription = screen.getByText(/현재 3개의 상품이 있습니다/i);
-  expect(titleDescription).toBeInTheDocument();
-});
+describe('App 컴포넌트 통합 테스트', () => {
+  test('초기 로드 시 상품 목록과 장바구니 배지가 정상 표시된다.', () => {
+    render(<App />);
+    expect(screen.getByText(/현재 3개의 상품이 있습니다/i)).toBeInTheDocument();
+    expect(screen.queryByClassName('cart-badge')).not.toBeInTheDocument();
+  });
 
-test('상품을 담으면 헤더의 장바구니 배지 숫자가 증가해야 한다.', () => {
-  render(<App />);
-  
-  // 첫 번째 '담기' 버튼 찾기
-  const addButtons = screen.getAllByText('담기');
-  fireEvent.click(addButtons[0]);
+  test('"구매" 버튼 클릭 시 보유카드 목록(Payment) 페이지로 이동한다.', () => {
+    render(<App />);
+    const payButtons = screen.getAllByText('구매');
+    fireEvent.click(payButtons[0]);
+    
+    expect(screen.getByText('보유카드')).toBeInTheDocument();
+  });
 
-  // 장바구니 배지에 '1'이 나타나는지 확인 (비동기 처리가 필요할 경우 async/await 활용 가능) [cite: 371]
-  const badge = screen.getByText('1');
-  expect(badge).toBeInTheDocument();
-  expect(badge).toHaveClass('cart-badge');
+  test('보유카드 페이지에서 "+" 버튼 클릭 시 카드 추가 폼으로 이동한다.', () => {
+    render(<App />);
+
+    fireEvent.click(screen.getAllByText('구매')[0]);
+    
+    const addBtn = screen.getByText('+');
+    fireEvent.click(addBtn);
+    
+    expect(screen.getByText(/카드 번호/i)).toBeInTheDocument();
+  });
 });
