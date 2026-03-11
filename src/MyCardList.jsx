@@ -1,13 +1,20 @@
 import React from 'react';
 import VirtualCard from './VirtualCard';
+import { decryptData } from './cryptoUtils';
 import './MyCardList.css'; 
 
-const MyCardList = ({ cards, onAddCard, onBack }) => {
+const MyCardList = ({ cards, onAddCard, onBack, onDeleteCard }) => {
 
   const renderAddCardButton = () => (
     <button className="add-card-btn-large" onClick={onAddCard}>+</button>
   );
 
+  const handleDelete = (id) => {
+    if (window.confirm("삭제하시겠습니까?")) {
+      onDeleteCard(id);
+    }
+  };
+  
   return (
     <div className="card-list-wrapper">
       <div className="card-list-header">
@@ -24,8 +31,9 @@ const MyCardList = ({ cards, onAddCard, onBack }) => {
         ) : (
           <div className="card-list">
             {cards.map((card) => {
-              const listDisplayNumber = card.cardNumber 
-                ? `${card.cardNumber.slice(0, 4)} ${card.cardNumber.slice(4, 8)} •••• ••••` 
+              const decryptedNumber = decryptData(card.cardNumber);
+              const listDisplayNumber = decryptedNumber 
+                ? `${decryptedNumber.slice(0, 4)} ${decryptedNumber.slice(4, 8)} •••• ••••` 
                 : '0000 0000 •••• ••••';
 
               return (
@@ -34,6 +42,8 @@ const MyCardList = ({ cards, onAddCard, onBack }) => {
                     displayNumber={listDisplayNumber}
                     ownerName={card.ownerName || 'NAME'}
                     expiryDate={card.expiryDate || 'MM/YY'}
+                    showDelete={true} 
+                    onDelete={() => handleDelete(card.id)}
                   />
                   <button className="pay-btn">이 카드로 결제하기</button>
                 </div>

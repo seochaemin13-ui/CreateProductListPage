@@ -1,18 +1,13 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './Card.css';
 
-const Card = ({ title, price, description, imageUrl, buttonText, onButtonClick, onPaymentClick }) => {
- 
-  const[isAdded, setIsAdded]=useState(false);
+const Card = ({ title, price, description, imageUrl, buttonText, onButtonClick, onPaymentClick, isAdded }) => {
 
-  const handleButtonClick=()=>{
-    const newAddedState = !isAdded;
-    setIsAdded(newAddedState);
-    
+  const handleButtonClick = () => {
     if (onButtonClick) {
-      onButtonClick(newAddedState);
+      onButtonClick(!isAdded);
     }
-  }
+  };
  
   return (
     <div className="card">
@@ -22,7 +17,6 @@ const Card = ({ title, price, description, imageUrl, buttonText, onButtonClick, 
         <p className="card-description">{description}</p>
         <p className="card-price">{price}</p>
 
-        {/* 버튼 그룹 추가 */}
         <div className="button-group">
           {buttonText && (
             <button
@@ -32,7 +26,6 @@ const Card = ({ title, price, description, imageUrl, buttonText, onButtonClick, 
               {isAdded ? '담김!' : buttonText}
             </button>
           )}
-          {/* 결제 버튼 추가 */}
           <button className="card-button payment" onClick={onPaymentClick}>
             구매
           </button>

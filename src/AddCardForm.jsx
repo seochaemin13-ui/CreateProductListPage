@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import VirtualCard from './VirtualCard';
+import { encryptData } from './cryptoUtils';
 import './AddCardForm.css';
 
 const AddCardForm = ({ onSubmit, onBack }) => {
@@ -26,6 +27,40 @@ const AddCardForm = ({ onSubmit, onBack }) => {
 
   const inputRefs = useRef([]);
   const pwdRefs = useRef([]);
+
+  // 데이터 무결성 검증 함수: Luhn 알고리즘
+  const isValidLuhn = (cardNumber) => {
+    let sum = 0;
+    let isEven = false;
+    for (let i = cardNumber.length - 1; i >= 0; i--) {
+      let digit = parseInt(cardNumber.charAt(i), 10);
+      if (isEven) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+      isEven = !isEven;
+    }
+    return sum % 10 === 0;
+  };
+
+  const isValidExpiryDate = (expiry) => {
+    const [monthStr, yearStr] = expiry.split('/').map(s => s.trim());
+    if (!monthStr || !yearStr || monthStr.length !== 2 || yearStr.length !== 2) return false;
+    
+    const month = parseInt(monthStr, 10);
+    const year = parseInt(`20${yearStr}`, 10);
+    
+    if (month < 1 || month > 12) return false;
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    if (year < currentYear) return false;
+    if (year === currentYear && month < currentMonth) return false;
+    return true;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,10 +129,23 @@ const AddCardForm = ({ onSubmit, onBack }) => {
   };
 
   const handleSubmit = () => {
+    const fullCardNumber = cardInfo.cardNumber.join('');
+    
+// 실제 카드 번호로 하고 싶다면 활성화.
+//    if (!isValidLuhn(fullCardNumber)) {
+//      alert("유효하지 않은 카드 번호입니다.");
+//      return;
+//    }
+    if (!isValidExpiryDate(cardInfo.expiryDate)) {
+      alert("유효기간이 지났거나 잘못되었습니다.");
+      return;
+    }
+
     onSubmit({
       ...cardInfo,
-      cardNumber: cardInfo.cardNumber.join(''),
-      password: cardInfo.password.join('')
+      cardNumber: encryptData(fullCardNumber),
+      cvc: encryptData(cardInfo.cvc),
+      password: encryptData(cardInfo.password.join(''))
     });
   };
 
