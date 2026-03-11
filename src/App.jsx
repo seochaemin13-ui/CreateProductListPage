@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { productsState, cartState, cardsState } from './recoil/atoms';
+import { productsState, cartState, cardsState, cartQuantitiesState } from './recoil/atoms';
 import Card from './Card';
 import AddCardForm from './AddCardForm';
 import MyCardList from './MyCardList';
+import Cart from './Cart';
 import './App.css';
 
 function App() {
 
   const [page, setPage] = useState('list');
-
   const [products, setProducts] = useRecoilState(productsState);
   const [cards, setCards] = useRecoilState(cardsState);
   const [cartItems, setCartItems] = useRecoilState(cartState);
-
+  const [cartQuantities, setCartQuantities] = useRecoilState(cartQuantitiesState);
+  
   useEffect(() => {
     fetch('/api/products')
       .then(res => res.json())
@@ -28,6 +29,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
+
+  useEffect(() => {
+    localStorage.setItem('cartQuantities', JSON.stringify(cartQuantities));
+  }, [cartQuantities]);
 
   const handleButtonClick = (id, isAdding) => {
     if (isAdding) {
@@ -54,8 +59,9 @@ function App() {
         <header className="header-bar">
           <div className="header-content">
             <img src="img/cart_icon.png"
-            alt="장바구니"
-            className='cart_icon' />
+              alt="장바구니"
+              className='cart_icon'
+              onClick={()=> setPage('cart')} />
             {cartItems.length >0 && (
               <span className='cart-badge'>{cartItems.length}</span>
               )}
@@ -94,6 +100,13 @@ function App() {
         <AddCardForm 
           onSubmit={handleAddCardSubmit}
           onBack={() => setPage('payment')}
+        />
+      )}
+
+      {page === 'cart' && (
+        <Cart 
+          onBack={() => setPage('list')} 
+          onCheckout={() => setPage('payment')} 
         />
       )}
     </div>

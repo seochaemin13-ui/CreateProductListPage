@@ -14,3 +14,8 @@ export const cardsState = atom({
   key: 'cardsState',
   default: JSON.parse(localStorage.getItem('myCards')) || [],
 });
+
+export const cartQuantitiesState = atom({
+  key: 'cartQuantitiesState',
+  default: JSON.parse(localStorage.getItem('cartQuantities')) || {}
+});
