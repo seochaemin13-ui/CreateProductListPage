@@ -1,13 +1,48 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { productsState, cartState, cartQuantitiesState } from './recoil/atoms';
 import './Cart.css';
 
+const parsePrice = (price) => {
+  if (typeof price === 'number') return price;
+  return parseInt(price.replace(/[^0-9]/g, ''), 10) || 0;
+};
+
 const Cart = ({ onBack, onCheckout }) => {
   const products = useRecoilValue(productsState);
   const [cartItemIds, setCartItemIds] = useRecoilState(cartState);
-  const cartProducts = products.filter(product => cartItemIds.includes(product.id));
   const [quantities, setQuantities] = useRecoilState(cartQuantitiesState);
+
+  const cartProducts = useMemo(() => {
+    return products.filter(product => cartItemIds.includes(product.id));
+  }, [products, cartItemIds]);
+
+  const { totalItemsPrice, shippingFee, totalPrice } = useMemo(() => {
+    const itemsPrice = cartProducts.reduce((sum, product) => {
+      const price = parsePrice(product.price);
+      const quantity = quantities[product.id] || 1;
+      return sum + (price * quantity);
+    }, 0);
+
+    const fee = (itemsPrice >= 100000 || itemsPrice === 0) ? 0 : 3000;
+    
+    return {
+      totalItemsPrice: itemsPrice,
+      shippingFee: fee,
+      totalPrice: itemsPrice + fee
+    };
+  }, [cartProducts, quantities]);
+
+  const handleIncrease = useCallback((id) => {
+    setQuantities(prev => ({ ...prev, [id]: (prev[id] || 1) + 1 }));
+  }, [setQuantities]);
+
+  const handleDecrease = useCallback((id) => {
+    setQuantities(prev => ({
+      ...prev,
+      [id]: prev[id] > 1 ? prev[id] - 1 : 1
+    }));
+  }, [setQuantities]);
 
   useEffect(() => {
     let isChanged = false;
@@ -22,31 +57,6 @@ const Cart = ({ onBack, onCheckout }) => {
 
     if (isChanged) setQuantities(newQs);
   }, [cartItemIds, setQuantities, quantities]);
-
-  const handleIncrease = (id) => {
-    setQuantities(prev => ({ ...prev, [id]: (prev[id] || 1) + 1 }));
-  };
-
-  const handleDecrease = (id) => {
-    setQuantities(prev => ({
-      ...prev,
-      [id]: prev[id] > 1 ? prev[id] - 1 : 1
-    }));
-  };
-
-  const parsePrice = (price) => {
-    if (typeof price === 'number') return price;
-    return parseInt(price.replace(/[^0-9]/g, ''), 10) || 0;
-  };
-
-  const totalItemsPrice = cartProducts.reduce((sum, product) => {
-    const price = parsePrice(product.price);
-    const quantity = quantities[product.id] || 1;
-    return sum + (price * quantity);
-  }, 0);
-
-  const shippingFee = (totalItemsPrice >= 100000 || totalItemsPrice === 0) ? 0 : 3000;
-  const totalPrice = totalItemsPrice + shippingFee;
 
   return (
     <div className="cart-page-wrapper">
