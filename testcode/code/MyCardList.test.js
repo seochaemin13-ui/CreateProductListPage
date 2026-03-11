@@ -2,6 +2,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MyCardList from '../../src/MyCardList';
 
+jest.mock('../../src/cryptoUtils', () => ({
+  decryptData: (data) => data 
+}));
+
 const mockCards = [
   { id: 1, cardNumber: '1111222233334444', ownerName: 'USER1', expiryDate: '11/25' }
 ];
