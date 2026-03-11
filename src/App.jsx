@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
+import { productsState, cartState, cardsState } from './recoil/atoms';
 import Card from './Card';
 import AddCardForm from './AddCardForm';
 import MyCardList from './MyCardList';
@@ -8,15 +10,16 @@ function App() {
 
   const [page, setPage] = useState('list');
 
-  const [cards, setCards] = useState(() => {
-    const savedCards = localStorage.getItem('myCards');
-    return savedCards ? JSON.parse(savedCards) : [];
-  });
+  const [products, setProducts] = useRecoilState(productsState);
+  const [cards, setCards] = useRecoilState(cardsState);
+  const [cartItems, setCartItems] = useRecoilState(cartState);
 
-  const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem('cartItems');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => setProducts(data))
+      .catch(err => console.error("데이터 로드 실패:", err));
+  }, [setProducts]);
 
   useEffect(() => {
     localStorage.setItem('myCards', JSON.stringify(cards));
@@ -27,17 +30,11 @@ function App() {
   }, [cartItems]);
 
   const handleButtonClick = (id, isAdding) => {
-      if (isAdding) {
-        console.log(`장바구니에 ${id}이 담겼습니다.`);
-        setCartItems(prev => [...prev, id]);
-      } else {
-        console.log(`장바구니에서 ${id}이 취소되었습니다.`);
-        setCartItems(prev => prev.filter(itemId => itemId !== id));
-      }
-    };
-
-  const handlePaymentClick = () => {
-    setPage('payment');
+    if (isAdding) {
+      setCartItems(prev => [...prev, id]);
+    } else {
+      setCartItems(prev => prev.filter(itemId => itemId !== id));
+    }
   };
 
   const handleAddCardSubmit = (newCardInfo) => {
@@ -49,12 +46,6 @@ function App() {
   const handleDeleteCard = (cardId) => {
     setCards(cards.filter(card => card.id !== cardId));
   };
-
-  const cardsData = [
-    { id: 1, title: "브랜드A", price: "35,000원", description: "편안하고 착용감이 좋은 신발", imageUrl: 'img/1.jpg', buttonText: "담기" },
-    { id: 2, title: "브랜드A", price: "25,000원", description: "힙한 컬러가 매력적인 신발", imageUrl: 'img/2.jpg', buttonText: "담기" },
-    { id: 3, title: "브랜드B", price: "35,000원", description: "힙한 컬러가 매력적인 신발", imageUrl: 'img/3.jpg', buttonText: "담기" }
-    ];
 
   return (
     <div className="App">
@@ -73,21 +64,17 @@ function App() {
 
         <div className="title-area">
           <h1>신발 상품 목록</h1>
-          <p>현재 {cardsData.length}개의 상품이 있습니다.</p>
+          <p>현재 {products.length}개의 상품이 있습니다.</p>
         </div>
 
         <div className="card_container">
-          {cardsData.map((card) => (
+          {products.map((card) => (
             <Card
               key={card.id}
-              title={card.title}
-              description={card.description}
-              price={card.price}
-              imageUrl={card.imageUrl}
-              buttonText={card.buttonText}
+              {...card}
               isAdded={cartItems.includes(card.id)}
               onButtonClick={(isAdding) => handleButtonClick(card.id, isAdding)}
-              onPaymentClick={handlePaymentClick}
+              onPaymentClick={() => setPage('payment')}
             />
           ))}
         </div>
