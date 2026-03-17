@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { productsState, cartState, cartQuantitiesState } from './recoil/atoms';
+import { productsState, cartState, cartQuantitiesState } from '../recoil/atoms';
 import './Cart.css';
 
 const parsePrice = (price) => {
@@ -8,10 +9,15 @@ const parsePrice = (price) => {
   return parseInt(price.replace(/[^0-9]/g, ''), 10) || 0;
 };
 
-const Cart = ({ onBack, onCheckout }) => {
+const Cart = () => {
+  const navigate = useNavigate();
   const products = useRecoilValue(productsState);
-  const [cartItemIds, setCartItemIds] = useRecoilState(cartState);
+  const [cartItemIds/*, setCartItemIds*/] = useRecoilState(cartState);
   const [quantities, setQuantities] = useRecoilState(cartQuantitiesState);
+
+  const handleCheckout=()=>{
+    navigate('/', {state:{fromCart:true}});
+  };
 
   const cartProducts = useMemo(() => {
     return products.filter(product => cartItemIds.includes(product.id));
@@ -61,7 +67,9 @@ const Cart = ({ onBack, onCheckout }) => {
   return (
     <div className="cart-page-wrapper">
       <header className="cart-header">
-        <button className="cart-back-btn" onClick={onBack}>←</button>
+        <Link to="/" className="cart-back-btn" style={{ textDecoration: 'none' }}>
+          ←
+        </Link>
       </header>
 
       <div className="cart-content">
@@ -109,7 +117,7 @@ const Cart = ({ onBack, onCheckout }) => {
               <span className="total-price">{totalPrice.toLocaleString()}원</span>
             </div>
 
-            <button className="checkout-btn" onClick={onCheckout}>
+            <button className="checkout-btn" onClick={handleCheckout}>
               결제하기
             </button>
           </>
