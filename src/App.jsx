@@ -16,12 +16,14 @@ function App() {
   const cards = useRecoilValue(cardsState);
   const cartQuantities = useRecoilValue(cartQuantitiesState);
   
+  /* 상품데이터가 백엔드에 있을경우 활성화. 지금은 recoil에 직접적으로 값을 넣음
   useEffect(() => {
     fetch('/api/products')
       .then(res => res.json())
       .then(data => setProducts(data))
       .catch(err => console.error("데이터 로드 실패:", err));
   }, [setProducts]);
+  */
 
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
