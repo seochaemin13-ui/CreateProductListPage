@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom, selector } from 'recoil';
 
 export const productsState = atom({
   key: 'productsState',
@@ -41,4 +41,13 @@ export const cardsState = atom({
 export const cartQuantitiesState = atom({
   key: 'cartQuantitiesState',
   default: JSON.parse(localStorage.getItem('cartQuantities')) || {}
+});
+
+export const cartTotalCountState = selector({
+  key: 'cartTotalCountState',
+  get: ({ get }) => {
+    const cartItemIds = get(cartState);
+    const quantities = get(cartQuantitiesState);
+    return cartItemIds.reduce((acc, id) => acc + (quantities[id] || 1), 0);
+  },
 });

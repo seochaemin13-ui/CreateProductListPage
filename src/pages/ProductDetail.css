@@ -1,0 +1,82 @@
+.detail-container {
+  width: 100%;
+  background-color: #fff;
+}
+
+.detail-header-flex {
+  justify-content: space-between !important;
+  padding: 0 4%;
+}
+
+.detail-main {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: clamp(15px, 4vw, 25px);
+}
+
+.back-arrow {
+  background: none;
+  border: none;
+  color: white;
+  font-size: clamp(24px, 6vw, 32px);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.main-img-wrapper {
+  width: 100%;
+  height: clamp(300px, 60vmin, 400px);
+  border-radius: clamp(12px, 3vw, 20px);
+  overflow: hidden;
+  margin-bottom: clamp(15px, 4vw, 24px);
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block; 
+  margin: 0 auto;
+}
+
+.info-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.detail-title { font-size: clamp(18px, 6vw, 26px); font-weight: 800; }
+.detail-desc { font-size: clamp(12px, 4vw, 18px); color: #000000; }
+.detail-price { font-size: clamp(14px, 5.5vw, 20px); font-weight: 700; margin-bottom: 24px; }
+
+.qty-picker {
+  display: flex; align-items: center; background-color: transparent;
+  border-radius: 8px; padding: 10px; height: fit-content;
+}
+.qty-picker button {
+    background: #f1f1f1;
+    border: none; border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+    cursor: pointer; }
+.qty-picker span { font-size: 15px; font-weight: 600; margin: 0 10px; }
+
+.add-to-cart-btn {
+  width: 100%; height: 56px; background-color: #000000; color: white;
+  border: none; border-radius: 28px; font-size: 16px; font-weight: 700;
+  cursor: pointer; margin-bottom: 40px;
+}
+
+.related-section h3 { font-size: clamp(12px, 4vw, 16px); margin-bottom: 4px; }
+.related-sub { font-size: clamp(10px, 4vw, 16px); color: #000000; margin-bottom: 16px; }
+.related-list { display: flex; gap: clamp(12px, 3vw, 20px); overflow-x: auto; }
+.related-item {
+     flex: 0 0 clamp(100px, 35vw, 140px);
+     aspect-ratio: 1 / 1;
+     border-radius: 12px;
+     overflow: hidden; background-color: #f9f9f9; }
+.related-item img { width: 100%; height: 100%; object-fit: cover; }
