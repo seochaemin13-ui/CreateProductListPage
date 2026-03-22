@@ -73,10 +73,19 @@
 
 .related-section h3 { font-size: clamp(12px, 4vw, 16px); margin-bottom: 4px; }
 .related-sub { font-size: clamp(10px, 4vw, 16px); color: #000000; margin-bottom: 16px; }
-.related-list { display: flex; gap: clamp(12px, 3vw, 20px); overflow-x: auto; }
+.related-list { display: flex; 
+  gap: 12px; overflow-x: auto;
+  padding-bottom: 15px; 
+  width: 100%;
+}
+
 .related-item {
-     flex: 0 0 clamp(100px, 35vw, 140px);
-     aspect-ratio: 1 / 1;
-     border-radius: 12px;
-     overflow: hidden; background-color: #f9f9f9; }
+  flex: 0 0 calc((100% - (12px * 2)) / 3);
+  @media (min-width: 768px) {
+    flex: 0 0 calc((100% - (12px * 3)) / 4);
+  }
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden; background-color: #f9f9f9;
+}
 .related-item img { width: 100%; height: 100%; object-fit: cover; }
