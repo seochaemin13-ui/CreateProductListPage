@@ -60,7 +60,11 @@ function Home() {
               isAdded={cartItems.includes(card.id)}
               onButtonClick={(isAdding) => handleButtonClick(card.id, isAdding)}
               onPaymentClick={(e) => {
-                navigate('/payment');
+                navigate('/payment', { 
+                  state: { 
+                    directItem: { id: card.id, quantity: 1 } 
+                  } 
+                });
               }} 
             />
           </div>

@@ -8,6 +8,7 @@ import ProductDetail from './pages/ProductDetail';
 import MyCardList from './MyCardList';
 import AddCardForm from './AddCardForm';
 import './App.css';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 const BASE_URL= import.meta.env.BASE_URL;
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/product/:productId" element={<ProductDetail />} />
           <Route path="/payment" element={<MyCardList />} />
           <Route path="/add-card" element={<AddCardForm />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
         </Routes>
       </div>
     </Router>

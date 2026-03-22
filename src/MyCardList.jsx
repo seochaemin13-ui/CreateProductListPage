@@ -1,14 +1,45 @@
 import React from 'react';
 import VirtualCard from './VirtualCard';
 import { decryptData } from './cryptoUtils';
-import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { cardsState } from './recoil/atoms';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { productsState, cardsState, cartState, cartQuantitiesState, cartTotalCountState, cartPriceSummaryState } from './recoil/atoms';
 import './MyCardList.css'; 
 
 const MyCardList = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const directItem = location.state?.directItem;
+  const products = useRecoilValue(productsState);
   const [cards, setCards] = useRecoilState(cardsState);
+  const totalCount = useRecoilValue(cartTotalCountState);
+  const {totalPrice} = useRecoilValue(cartPriceSummaryState);
+  const setCartItems = useSetRecoilState(cartState);
+  const SetCartQuantities = useSetRecoilState(cartQuantitiesState);
+
+
+  const calculateDirectPrice = () => {
+    if (!directItem) return 0;
+    const product = products.find(p => p.id === directItem.id);
+    const price = parseInt(product.price.replace(/[^0-9]/g, ''), 10) || 0;
+    const shippingFee = price >= 100000 ? 0 : 3000;
+    return price + shippingFee;
+  };
+
+  const finalPayCount = directItem ? directItem.quantity : totalCount;
+  const finalPayPrice = directItem ? calculateDirectPrice() : totalPrice;
+
+  const handlePay = () => {
+    if (window.confirm("결제를 진행하시겠습니까?")) {
+      navigate('/payment-success', { 
+        state: { count:finalPayCount, price: finalPayPrice } 
+      });
+      if (!directItem) {
+        setCartItems([]);
+        setCartQuantities({});
+      }
+    }
+  };
 
   const handleDeleteCard = (cardId) => {
     if (window.confirm("삭제하시겠습니까?")) {
@@ -50,7 +81,7 @@ const MyCardList = () => {
                     showDelete={true} 
                     onDelete={() => handleDeleteCard(card.id)}
                   />
-                  <button className="pay-btn" onClick={() => alert('결제가 진행됩니다.')}>
+                  <button className="pay-btn" onClick={handlePay}>
                     이 카드로 결제하기
                   </button>
                 </div>

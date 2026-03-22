@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { productsState, cartState, cartQuantitiesState } from '../recoil/atoms';
+import { productsState, cartState, cartQuantitiesState, cartPriceSummaryState } from '../recoil/atoms';
 import './Cart.css';
 
 const parsePrice = (price) => {
@@ -12,9 +12,10 @@ const parsePrice = (price) => {
 const Cart = () => {
   const navigate = useNavigate();
   const products = useRecoilValue(productsState);
-  const [cartItemIds/*, setCartItemIds*/] = useRecoilState(cartState);
+  const [cartItemIds] = useRecoilState(cartState);
   const [quantities, setQuantities] = useRecoilState(cartQuantitiesState);
-
+  const { totalItemsPrice, shippingFee, totalPrice } = useRecoilValue(cartPriceSummaryState);
+  
   const handleCheckout=()=>{
     navigate('/payment');
   };
@@ -23,21 +24,6 @@ const Cart = () => {
     return products.filter(product => cartItemIds.includes(product.id));
   }, [products, cartItemIds]);
 
-  const { totalItemsPrice, shippingFee, totalPrice } = useMemo(() => {
-    const itemsPrice = cartProducts.reduce((sum, product) => {
-      const price = parsePrice(product.price);
-      const quantity = quantities[product.id] || 1;
-      return sum + (price * quantity);
-    }, 0);
-
-    const fee = (itemsPrice >= 100000 || itemsPrice === 0) ? 0 : 3000;
-    
-    return {
-      totalItemsPrice: itemsPrice,
-      shippingFee: fee,
-      totalPrice: itemsPrice + fee
-    };
-  }, [cartProducts, quantities]);
 
   const handleIncrease = useCallback((id) => {
     setQuantities(prev => ({ ...prev, [id]: (prev[id] || 1) + 1 }));
