@@ -5,6 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  padding: 0 4%;
+  box-sizing: border-box;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -17,10 +19,15 @@
   margin-right: 20px;
 }
 
-.cart_icon{
-  color: white;
-  cursor: pointer;
+.cart_icon, .back-arrow, .close-btn, .clean-header-btn {
   width: 28px;
+  height: 28px;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .cart-badge {
