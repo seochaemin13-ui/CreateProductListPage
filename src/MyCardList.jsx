@@ -1,25 +1,30 @@
 import React from 'react';
 import VirtualCard from './VirtualCard';
 import { decryptData } from './cryptoUtils';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { cardsState } from './recoil/atoms';
 import './MyCardList.css'; 
 
-const MyCardList = ({ cards, onAddCard, onBack, onDeleteCard }) => {
+const MyCardList = () => {
+  const navigate = useNavigate();
+  const [cards, setCards] = useRecoilState(cardsState);
 
-  const renderAddCardButton = () => (
-    <button className="add-card-btn-large" onClick={onAddCard}>+</button>
-  );
-
-  const handleDelete = (id) => {
+  const handleDeleteCard = (cardId) => {
     if (window.confirm("삭제하시겠습니까?")) {
-      onDeleteCard(id);
+      setCards(cards.filter(card => card.id !== cardId));
     }
   };
-  
+
+  const renderAddCardButton = () => (
+    <button className="add-card-btn-large" onClick={() => navigate('/add-card')}>+</button>
+  );
+
   return (
     <div className="card-list-wrapper">
       <div className="card-list-header">
         <h2>보유카드</h2>
-        <button className="close-btn" onClick={onBack}>✕</button>
+        <button className="close-btn" onClick={() => navigate('/')}>✕</button>
       </div>
 
       <div className="card-list-content">
@@ -43,9 +48,11 @@ const MyCardList = ({ cards, onAddCard, onBack, onDeleteCard }) => {
                     ownerName={card.ownerName || 'NAME'}
                     expiryDate={card.expiryDate || 'MM/YY'}
                     showDelete={true} 
-                    onDelete={() => handleDelete(card.id)}
+                    onDelete={() => handleDeleteCard(card.id)}
                   />
-                  <button className="pay-btn">이 카드로 결제하기</button>
+                  <button className="pay-btn" onClick={() => alert('결제가 진행됩니다.')}>
+                    이 카드로 결제하기
+                  </button>
                 </div>
               );
             })}

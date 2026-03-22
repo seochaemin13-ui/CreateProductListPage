@@ -5,6 +5,8 @@ import { productsState, cartState, cardsState, cartQuantitiesState } from './rec
 import Home from './pages/Home';
 import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
+import MyCardList from './MyCardList';
+import AddCardForm from './AddCardForm';
 import './App.css';
 
 const BASE_URL= import.meta.env.BASE_URL;
@@ -38,6 +40,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/product/:productId" element={<ProductDetail />} />
+          <Route path="/payment" element={<MyCardList />} />
+          <Route path="/add-card" element={<AddCardForm />} />
         </Routes>
       </div>
     </Router>

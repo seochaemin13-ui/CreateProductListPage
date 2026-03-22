@@ -16,7 +16,7 @@ const Cart = () => {
   const [quantities, setQuantities] = useRecoilState(cartQuantitiesState);
 
   const handleCheckout=()=>{
-    navigate('/', {state:{fromCart:true}});
+    navigate('/payment');
   };
 
   const cartProducts = useMemo(() => {

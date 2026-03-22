@@ -3,10 +3,16 @@ import './Card.css';
 
 const Card = ({ title, price, description, imageUrl, buttonText, onButtonClick, onPaymentClick, isAdded }) => {
 
-  const handleButtonClick = () => {
-    if (onButtonClick) {
-      onButtonClick(!isAdded);
-    }
+  const handleButtonClick = (e) =>{
+    e.stopPropagation();
+    
+    const nextIsAdding = !isAdded; 
+    onButtonClick(nextIsAdding); 
+  };
+
+  const handlePaymentClick = (e) => {
+    e.stopPropagation();
+    onPaymentClick(e);
   };
  
   return (
@@ -22,11 +28,16 @@ const Card = ({ title, price, description, imageUrl, buttonText, onButtonClick, 
             <button
               className={`card-button ${isAdded ? "added" : ""}`}
               onClick={handleButtonClick}
+              type="button"
             >
               {isAdded ? '담김!' : buttonText}
             </button>
           )}
-          <button className="card-button payment" onClick={onPaymentClick}>
+          <button
+            className="card-button payment"
+            onClick={handlePaymentClick}
+            type="button"
+          >
             구매
           </button>
         </div>

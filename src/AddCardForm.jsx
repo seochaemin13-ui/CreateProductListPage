@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { cardsState } from './recoil/atoms';
 import VirtualCard from './VirtualCard';
 import { encryptData } from './cryptoUtils';
 import './AddCardForm.css';
 
-const AddCardForm = ({ onSubmit, onBack }) => {
+const AddCardForm = () => {
+  const navigate = useNavigate();
+  const [cards, setCards] = useRecoilState(cardsState);
+
   const [showTooltip, setShowTooltip] = useState(false);
   const helpRef = useRef(null);
 
@@ -28,7 +34,6 @@ const AddCardForm = ({ onSubmit, onBack }) => {
   const inputRefs = useRef([]);
   const pwdRefs = useRef([]);
 
-  // 데이터 무결성 검증 함수: Luhn 알고리즘
   const isValidLuhn = (cardNumber) => {
     let sum = 0;
     let isEven = false;
@@ -47,18 +52,12 @@ const AddCardForm = ({ onSubmit, onBack }) => {
   const isValidExpiryDate = (expiry) => {
     const [monthStr, yearStr] = expiry.split('/').map(s => s.trim());
     if (!monthStr || !yearStr || monthStr.length !== 2 || yearStr.length !== 2) return false;
-    
     const month = parseInt(monthStr, 10);
     const year = parseInt(`20${yearStr}`, 10);
-    
     if (month < 1 || month > 12) return false;
-
     const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-
-    if (year < currentYear) return false;
-    if (year === currentYear && month < currentMonth) return false;
+    if (year < now.getFullYear()) return false;
+    if (year === now.getFullYear() && month < (now.getMonth() + 1)) return false;
     return true;
   };
 
@@ -86,9 +85,7 @@ const AddCardForm = ({ onSubmit, onBack }) => {
     setCardInfo({ ...cardInfo, cardNumber: newChunks });
 
     if (val.length === 4 && index < 3) {
-      setTimeout(() => {
-        inputRefs.current[index + 1]?.focus();
-      }, 0);
+      setTimeout(() => inputRefs.current[index + 1]?.focus(), 0);
     }
   };
 
@@ -141,12 +138,16 @@ const AddCardForm = ({ onSubmit, onBack }) => {
       return;
     }
 
-    onSubmit({
+    const newCard = {
       ...cardInfo,
+      id: Date.now(),
       cardNumber: encryptData(fullCardNumber),
       cvc: encryptData(cardInfo.cvc),
       password: encryptData(cardInfo.password.join(''))
-    });
+    };
+
+    setCards([...cards, newCard]);
+    navigate('/payment');
   };
 
   const formDisplayNumber = [
@@ -166,10 +167,10 @@ const AddCardForm = ({ onSubmit, onBack }) => {
   return (
     <div className="page-wrapper">
       <header className="clean-header">
-        <button className="clean-header-btn" style={{ fontSize: '18px' }} onClick={onBack}>
+        <button className="clean-header-btn" style={{ fontSize: '18px' }} onClick={() => navigate('/payment')}>
           &lt; 카드 추가
         </button>
-        <button className="clean-header-btn" onClick={onBack}>
+        <button className="clean-header-btn"onClick={() => navigate('/payment')}>
           ✕
         </button>
       </header>
